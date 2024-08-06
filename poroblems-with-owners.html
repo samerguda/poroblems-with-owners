@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاكل مع ملاك المزارع </title>
+    <title>Photo Preview</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,11 +39,18 @@
             height: auto;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .photo:hover {
+            transform: scale(1.05);
         }
 
         .buttons {
             display: flex;
             justify-content: space-around;
+            margin-top: 20px;
         }
 
         button {
@@ -64,7 +71,73 @@
         button:active {
             background-color: #004494;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            margin: 10% auto;
+            display: block;
+            width: 80%;
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #fff;
+            font-size: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
     </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="current-datetime"></h1>
+        </div>
+        <div class="preview">
+            <img src="a.jpg" alt="Photo 1" class="photo" onclick="openModal('a.jpg')">
+            <img src="b.jpg" alt="Photo 2" class="photo" onclick="openModal('b.jpg')">
+            <img src="c.jpg" alt="Photo 3" class="photo" onclick="openModal('c.jpg')">
+        </div>
+        <div class="buttons">
+            <button onclick="printPage()">Print</button>
+            <button onclick="sendWhatsApp()">Send via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- Modal for full-size image view -->
+    <div id="photoModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div class="buttons">
+            <button onclick="takeScreenshot()">Take Screenshot</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Display current date and time
@@ -84,24 +157,31 @@
                 window.open(url, '_blank');
             };
         });
+
+        // Function to open the modal with full-size image
+        function openModal(imageSrc) {
+            const modal = document.getElementById('photoModal');
+            const modalImage = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImage.src = imageSrc;
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('photoModal');
+            modal.style.display = "none";
+        }
+
+        // Function to take a screenshot of the modal content
+        function takeScreenshot() {
+            html2canvas(document.querySelector("#photoModal")).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'screenshot.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
     </script>
-</head>
-<body>
-    <div class="container">
-        <h1>مشاكل مع ملاك المزارع </h1>
-        <p>يطلبون عدم ازالة المواد و طلب اراجعها </p>
-        <div class="header">
-            <h1 id="current-datetime"></h1>
-        </div>
-        <div class="preview">
-            <img src="a.jpg" alt="Photo 1" class="photo">
-            <img src="b.jpg" alt="Photo 2" class="photo">
-            <img src="c.jpg" alt="Photo 3" class="photo">
-        </div>
-        <div class="buttons">
-            <button onclick="printPage()">Print</button>
-            <button onclick="sendWhatsApp()">Send via WhatsApp</button>
-        </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
